@@ -1,6 +1,7 @@
 package by.bsuir.wt.one;
 
-class Book{
+
+class Book implements Cloneable{
     protected String title;
     protected String author;
     protected int price;
@@ -10,6 +11,18 @@ class Book{
         this.title = title;
         this.author = author;
         this.price = price;
+    }
+
+    @Override
+    public Book clone(){
+        try {
+            Book result = (Book) super.clone();
+            result.title = new String(title);
+            result.author = new String(author);
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 
     @Override
@@ -74,6 +87,14 @@ class Book{
 class ProgrammerBook extends Book{
     private String language;
     private int level;
+
+    @Override
+    public ProgrammerBook clone(){
+        Object cloneBook = super.clone();
+        ProgrammerBook cloneProgrammerBook = (ProgrammerBook) cloneBook;
+        cloneProgrammerBook.language = new String(language);
+        return cloneProgrammerBook;
+    }
 
     @Override
     public int hashCode(){
@@ -146,5 +167,9 @@ public class TaskTwelve {
         System.out.println("other.equals(pascal): " + other.equals(pascal));
         ProgrammerBook pascal2 = new ProgrammerBook("Pascal Guide", "N. Virt", 3990, "English", 500);
         System.out.println("pascal.equals(pascal2): " + pascal.equals(pascal2));
+
+        ProgrammerBook pascal3 = pascal2.clone();
+        System.out.println("pascal2 == pascal3: " + (pascal2 == pascal3));
+        System.out.println("pascal2.equals(pascal3): " + pascal2.equals(pascal3));
     }
 }
