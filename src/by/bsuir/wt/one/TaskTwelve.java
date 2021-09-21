@@ -1,16 +1,37 @@
 package by.bsuir.wt.one;
 
 
-class Book implements Cloneable{
+import java.util.Iterator;
+import java.util.TreeSet;
+
+class Book implements Cloneable, Comparable<Book>{
     protected String title;
     protected String author;
     protected int price;
     protected static int edition;
+    protected String isbn;
 
-    public Book(String title, String author, int price){
+    private static boolean checkIsbn(String isbn){
+        for (char digit : isbn.toCharArray()){
+            if (!Character.isDigit(digit)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Book(String title, String author, int price, String isbn){
+        if (price <= 0) throw new RuntimeException("Price cannot be non-positive!");
+        if (isbn.length() != 13 || !checkIsbn(isbn)) throw new RuntimeException("ISBN number is supposed to be 13 digits!");
         this.title = title;
         this.author = author;
         this.price = price;
+        this.isbn = isbn;
+    }
+
+    @Override
+    public int compareTo(Book obj){
+        return isbn.compareTo(obj.isbn);
     }
 
     @Override
@@ -40,7 +61,8 @@ class Book implements Cloneable{
         return o instanceof Book &&
                 title.equals(((Book)(o)).title) &&
                 author.equals(((Book)(o)).author) &&
-                price == ((Book)(o)).price;
+                price == ((Book)(o)).price &&
+                isbn.equals(((Book)(o)).isbn);
     }
 
     @Override
@@ -56,6 +78,9 @@ class Book implements Cloneable{
     }
 
     public static void setEdition(int edition) {
+        if (edition <= 0)
+            throw new RuntimeException("Edition cannot be non-positive!");
+
         Book.edition = edition;
     }
 
@@ -82,6 +107,10 @@ class Book implements Cloneable{
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+
+    public String getIsbn() { return isbn; }
 }
 
 class ProgrammerBook extends Book{
@@ -120,8 +149,8 @@ class ProgrammerBook extends Book{
     }
 
     public ProgrammerBook(String title, String author, int price,
-                          String language, int level){
-        super(title, author, price);
+                          String language, int level, String isbn){
+        super(title, author, price, isbn);
         this.language = language;
         this.level = level;
     }
@@ -147,10 +176,10 @@ public class TaskTwelve {
 
     public static void main(String[] args){
         Book.setEdition(15);
-        Book b = new Book("The World as Will and Representation", "A. Shopenhauer", 2500);
+        Book b = new Book("The World as Will and Representation", "A. Shopenhauer", 2500, "9847501664276");
         System.out.println(b);
         System.out.println("Hash code = " + b.hashCode());
-        Book other = new Book("Beyond Good and Evil", "F. Nietzsche", 3940);
+        Book other = new Book("Beyond Good and Evil", "F. Nietzsche", 3940, "1234567899876");
         System.out.println(other);
         System.out.println("Hash code = " + other.hashCode());
         System.out.println("b.equals(other): " + b.equals(other));
@@ -160,16 +189,29 @@ public class TaskTwelve {
         b.setPrice(3940);
         System.out.println("b.equals(other): " + b.equals(other));
 
-        ProgrammerBook pascal = new ProgrammerBook("Pascal Guide", "N. Virt", 3990, "English", 500);
+        ProgrammerBook pascal = new ProgrammerBook("Pascal Guide", "N. Virt", 3990, "English", 500, "8650737543219");
         System.out.println(pascal);
         System.out.println("Hash code = " + pascal.hashCode());
         System.out.println("b.equals(pascal): " + b.equals(pascal));
         System.out.println("other.equals(pascal): " + other.equals(pascal));
-        ProgrammerBook pascal2 = new ProgrammerBook("Pascal Guide", "N. Virt", 3990, "English", 500);
+        ProgrammerBook pascal2 = new ProgrammerBook("Pascal Guide", "N. Virt", 3990, "English", 500, "9485665323567");
         System.out.println("pascal.equals(pascal2): " + pascal.equals(pascal2));
 
         ProgrammerBook pascal3 = pascal2.clone();
         System.out.println("pascal2 == pascal3: " + (pascal2 == pascal3));
         System.out.println("pascal2.equals(pascal3): " + pascal2.equals(pascal3));
+
+        TreeSet<Book> mySet = new TreeSet<Book>();
+        mySet.add(b);
+        mySet.add(other);
+        mySet.add(pascal);
+        mySet.add(pascal2);
+        mySet.add(pascal3);
+
+        Iterator<Book> it = mySet.iterator();
+        while(it.hasNext()){
+            Book book = it.next();
+            System.out.println(book.getIsbn() + " - " + book.getTitle());
+        }
     }
 }
