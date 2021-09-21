@@ -1,6 +1,8 @@
 package by.bsuir.wt.one;
 
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -67,7 +69,7 @@ class Book implements Cloneable, Comparable<Book>{
 
     @Override
     public String toString(){
-        return "Book title: " + title +
+        return "\nBook title: " + title +
                 "\nAuthor: " + author +
                 "\nPrice: " + price +
                 "\nEdition: " + edition;
@@ -172,6 +174,50 @@ class ProgrammerBook extends Book{
     }
 }
 
+class SortByName implements Comparator<Book> {
+    @Override
+    public int compare(Book lhs, Book rhs){
+        return lhs.getTitle().compareTo(rhs.getTitle());
+    }
+}
+
+class SortByNameAuthor implements Comparator<Book>{
+    @Override
+    public int compare(Book lhs, Book rhs){
+        int compare =  lhs.getTitle().compareTo(rhs.getTitle());
+        if (compare == 0){
+            return lhs.getAuthor().compareTo(rhs.getAuthor());
+        }
+        return compare;
+    }
+}
+
+class SortByAuthorName implements Comparator<Book>{
+    @Override
+    public int compare(Book lhs, Book rhs){
+        int compare =  lhs.getAuthor().compareTo(rhs.getAuthor());
+        if (compare == 0){
+            return lhs.getTitle().compareTo(rhs.getTitle());
+        }
+        return compare;
+    }
+}
+
+class SortByAuthorNamePrice implements Comparator<Book>{
+    @Override
+    public int compare(Book lhs, Book rhs){
+        int compare =  lhs.getAuthor().compareTo(rhs.getAuthor());
+        if (compare == 0){
+            compare = lhs.getTitle().compareTo(rhs.getTitle());
+            if (compare == 0){
+                return Integer.compare(lhs.getPrice(), rhs.getPrice());
+            }
+            return compare;
+        }
+        return compare;
+    }
+}
+
 public class TaskTwelve {
 
     public static void main(String[] args){
@@ -201,6 +247,11 @@ public class TaskTwelve {
         System.out.println("pascal2 == pascal3: " + (pascal2 == pascal3));
         System.out.println("pascal2.equals(pascal3): " + pascal2.equals(pascal3));
 
+        b.setTitle("Crime and Punishment"); b.setAuthor("F. Dostoevsky");
+        other.setTitle("Possessed"); other.setAuthor("F. Dostoevsky");
+        pascal.setTitle("Les Miserables"); pascal.setAuthor("Victor Hugo");
+        pascal2.setTitle("War and Peace"); pascal2.setAuthor("Leo Tolstoy");
+
         TreeSet<Book> mySet = new TreeSet<Book>();
         mySet.add(b);
         mySet.add(other);
@@ -213,5 +264,18 @@ public class TaskTwelve {
             Book book = it.next();
             System.out.println(book.getIsbn() + " - " + book.getTitle());
         }
+
+        ArrayList<Book> arr = new ArrayList<>();
+        arr.addAll(mySet);
+
+
+        arr.sort(new SortByName());
+        System.out.println(arr);
+        arr.sort(new SortByNameAuthor());
+        System.out.println(arr);
+        arr.sort(new SortByAuthorName());
+        System.out.println(arr);
+        arr.sort(new SortByAuthorNamePrice());
+        System.out.println(arr);
     }
 }
